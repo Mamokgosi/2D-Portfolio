@@ -1,3 +1,4 @@
+import { scaleFactor } from "./constants";
 import { x } from "./kaboomCtx";
 
 x.loadSprite("spritesheet", "./spritesheet.png",{
@@ -17,3 +18,50 @@ x.loadAseprite("map", "./map.png");
 
 x.setBackground(x.Color.fromHex("#311047"));
 
+x.scene("main", async () => {
+   const mapData = await (await fetch("./map.json")).json()
+   const layers = mapData.layers;
+
+   const map = x.make([x.sprite("map"), x.pos(0), x.scale(scaleFactor)])
+
+   const player = x.make([
+    x.sprite("spritesheet", {anim:"idle-down" }), 
+    x.area({
+      shape: new x.Rect(x.vec2(0, 3), 10, 10),
+    }),
+    x.body(),
+    x.anchor("center"),
+    x.pos(),
+    x.scale(scaleFactor),
+    {
+        speed: 250,
+        direction: "down",
+        isInDialogue: false,    
+    },
+    "player", 
+]);
+
+ for (const layer of layers){
+    if (layer.name == "boundaries") {
+        for (const boundary of layer.objects) {
+            map.add([
+               x.area({
+                shape: new x.Rect(x.vec2(0), boundary.width, boundary.height),
+               }),
+               x.body({ isStatic: true }),
+               x.pos(boundary.x, boundary.y),
+               boundary.name,
+            ]);
+
+            if (boundary.name) {
+                player.onCollide(boundary.name, () => {
+                    player.isInDialogue = true;
+                    
+                });
+            }
+        }
+    }
+ }
+});
+
+k.go("main");
