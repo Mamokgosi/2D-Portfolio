@@ -12,3 +12,8 @@ x.loadSprite("spritesheet", "./spritesheet.png",{
         "walk-up": { from: 1014, to: 1017, loop: true, speed: 8 },
     }, 
 });
+
+x.loadAseprite("map", "./map.png");
+
+x.setBackground(x.Color.fromHex("#311047"));
+
