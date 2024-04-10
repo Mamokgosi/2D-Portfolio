@@ -1,5 +1,6 @@
 import { scaleFactor } from "./constants";
 import { x } from "./kaboomCtx";
+import { displayDialogue } from "./utils";
 
 x.loadSprite("spritesheet", "./spritesheet.png",{
     sliceX: 39,
@@ -22,7 +23,7 @@ x.scene("main", async () => {
    const mapData = await (await fetch("./map.json")).json()
    const layers = mapData.layers;
 
-   const map = x.make([x.sprite("map"), x.pos(0), x.scale(scaleFactor)])
+   const map = x.add([x.sprite("map"), x.pos(0), x.scale(scaleFactor)])
 
    const player = x.make([
     x.sprite("spritesheet", {anim:"idle-down" }), 
@@ -56,12 +57,29 @@ x.scene("main", async () => {
             if (boundary.name) {
                 player.onCollide(boundary.name, () => {
                     player.isInDialogue = true;
-                    
+                    displayDialogue("TODO", () => (player.isInDialogue = false ));
                 });
+            }
+        }
+        continue;
+    }
+    if (layer.name === "spawnpoints") {
+        for (const entity of layer.objects) {
+            if (entity.name === "player") {
+              player.pos = x.vec2(
+                (map.pos.x + entity.x) * scaleFactor,
+                (map.pos.y + entity.y) * scaleFactor
+              );
+              x.add(player);
+              continue;
             }
         }
     }
  }
+
+ x.onUpdate(() => {
+    x.camPos(player.pos.x, player.pos.y + 100);
+ });
 });
 
 k.go("main");
