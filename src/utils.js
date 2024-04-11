@@ -3,8 +3,7 @@ export function displayDialogue(text, onDisplayEnd) {
    const dialogue = document.getElementById("dialogue");
 
    dialogueUI.style.display = "block";
-
-   let index = o;
+   let index = 0;
    let currentText = "";
    const intervalRef = setInterval(() => {
     if (index < text.length) {
@@ -14,9 +13,10 @@ export function displayDialogue(text, onDisplayEnd) {
         return;
     }
     clearInterval(intervalRef);
-   }, 5);
+   }, 1);
 
    const closeBtn = document.getElementById("close");
+
     function onCloseBtnClick() {
     onDisplayEnd();
     dialogueUI.style.display = "none";
@@ -24,5 +24,21 @@ export function displayDialogue(text, onDisplayEnd) {
     clearInterval(intervalRef);
     closeBtn.removeEventListener("click", onCloseBtnClick);
    }
+
    closeBtn.addEventListener("click", onCloseBtnClick);
+
+   addEventListener("keypress", (key) => {
+    if (key.code === "Enter") {
+      closeBtn.click();
+    }
+  });
 }
+
+export function setCamScale(p) {
+    const resizeFactor = p.width() / p.height();
+    if (resizeFactor < 1) {
+      p.camScale(p.vec2(1));
+    } else {
+      p.camScale(p.vec2(1.5));
+    }
+  }
